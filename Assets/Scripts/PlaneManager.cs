@@ -22,7 +22,7 @@ public class PlaneManager : MonoBehaviour
     private void Start()
     {
         // Cache all planes at the start
-        allPlanes = FindObjectsOfType<PlaneController2D>();
+        allPlanes = FindObjectsByType<PlaneController2D>(FindObjectsSortMode.None);
 
         // Ensure planes are ordered by index
         System.Array.Sort(allPlanes, (a, b) => a.planeIndex.CompareTo(b.planeIndex));

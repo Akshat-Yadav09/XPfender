@@ -16,7 +16,7 @@ public class DestroyOnCollision : MonoBehaviour
         }
 
         // Get reference to BubbleManager
-        bubbleManager = FindObjectOfType<BubbleManager>();
+        bubbleManager = FindFirstObjectByType<BubbleManager>();
         if (bubbleManager == null)
         {
             Debug.LogError("No BubbleManager found in the scene!");

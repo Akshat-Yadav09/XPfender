@@ -27,7 +27,7 @@ public class OscillatingObject : MonoBehaviour
         SelectNewTarget();
 
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb != null) rb.isKinematic = true;
+        if (rb != null) rb.bodyType = RigidbodyType2D.Kinematic;
 
         Collider2D collider = GetComponent<Collider2D>();
         if (collider != null) collider.isTrigger = true;
