@@ -1,7 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
-
 public class BoxColliderClickHandler : MonoBehaviour
 {
     // Example operation: Set a target GameObject active
@@ -30,7 +29,32 @@ public class BoxColliderClickHandler : MonoBehaviour
 
     [SerializeField] private float delay = 0.5f;
 
+    private static List<DesktopObject> cachedDesktopObjects = null;
+    private static int nextDesktopObjectIndex = 0;
 
+    private void Start()
+    {
+        // Only run desktop mapping if we're on a supported platform
+#if UNITY_STANDALONE_WIN
+        if (cachedDesktopObjects == null)
+        {
+            cachedDesktopObjects = WindowsDesktopScanner.ScanDesktop();
+            nextDesktopObjectIndex = 0;
+        }
+
+        if (cachedDesktopObjects != null && nextDesktopObjectIndex < cachedDesktopObjects.Count)
+        {
+            DesktopObject obj = cachedDesktopObjects[nextDesktopObjectIndex++];
+            
+            // Assume Camera.main exists and z depth is current object's z
+            if (DesktopCoordinateConverter.TryWindowsToUnityWorld(obj.screenPosition, Camera.main, transform.position.z, out Vector3 unityWorldPos))
+            {
+                transform.position = unityWorldPos;
+                Debug.Log($"Mapped {gameObject.name} to Desktop Icon {obj.displayName} at {unityWorldPos}");
+            }
+        }
+#endif
+    }
 
     private IEnumerator OnMouseDown()
     {

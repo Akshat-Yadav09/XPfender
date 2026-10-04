@@ -21,11 +21,20 @@ public class PlaneManager : MonoBehaviour
 
     private void Start()
     {
-        // Cache all planes at the start
-        allPlanes = FindObjectsByType<PlaneController2D>(FindObjectsSortMode.None);
+        // Cache all planes at the start, including inactive ones
+        allPlanes = FindObjectsByType<PlaneController2D>(FindObjectsInactive.Include);
 
         // Ensure planes are ordered by index
         System.Array.Sort(allPlanes, (a, b) => a.planeIndex.CompareTo(b.planeIndex));
+
+        // Disable all planes so they don't collide with each other at 0,0
+        foreach (var plane in allPlanes)
+        {
+            if (plane != null)
+            {
+                plane.gameObject.SetActive(false);
+            }
+        }
 
         // Enable the first plane
         ActivatePlane(0);
@@ -62,6 +71,10 @@ public class PlaneManager : MonoBehaviour
         }
 
         currentPlaneIndex = index;
+        
+        // Turn the GameObject on!
+        allPlanes[index].gameObject.SetActive(true);
+        
         allPlanes[index].EnableControl(true);
         // Set the active plane's tag to "Player"
         allPlanes[index].gameObject.tag = "Player"; // Set the Player tag

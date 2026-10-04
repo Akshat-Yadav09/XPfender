@@ -43,34 +43,35 @@ public class PlaneController2D : MonoBehaviour
     {
         if (isControlEnabled && !isDestroyed)
         {
-            ApplyGravity();
+            // Maintain constant forward velocity in the direction it's facing
+            // We use FixedUpdate for Rigidbody modifications to prevent physics jittering
+            rb.linearVelocity = transform.right * forwardSpeed;
+            
+            // Note: Since we are overwriting linearVelocity completely, 
+            // Unity's native gravityScale won't pull it down as expected because 
+            // we overwrite the Y-velocity every frame.
+            // If you want gravity to constantly push it down while it flies forward, 
+            // we add the gravity force manually to the velocity!
+            rb.linearVelocity += Vector2.down * gravityForce * Time.fixedDeltaTime * 10f; 
         }
     }
 
-    private void ApplyGravity()
+    private void HandleRotation()
     {
-        rb.AddForce(Vector2.down * gravityForce);
+        float rotationInput = 0;
+
+        // Opposite controls: Right key rotates left, Left key rotates right
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+        {
+            rotationInput = 1; // Rotate left
+        }
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        {
+            rotationInput = -1; // Rotate right
+        }
+
+        transform.Rotate(0, 0, rotationInput * rotationSpeed * Time.deltaTime);
     }
-
-   private void HandleRotation()
-{
-    float rotationInput = 0;
-
-    // Opposite controls: Right key rotates left, Left key rotates right
-    if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-    {
-        rotationInput = 1; // Rotate left
-    }
-    if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-    {
-        rotationInput = -1; // Rotate right
-    }
-
-    transform.Rotate(0, 0, rotationInput * rotationSpeed * Time.deltaTime);
-
-    // Maintain constant forward velocity
-    rb.linearVelocity = transform.right * forwardSpeed;
-}
     private void FlipYAxisBasedOnZRotation()
     {
         // Get the Z rotation angle
@@ -133,8 +134,9 @@ public class PlaneController2D : MonoBehaviour
         }
     }
 
-    private void TriggerDestruction()
+    public void TriggerDestruction()
     {
+        if (isDestroyed) return;
         isDestroyed = true;
 
         // Replace the sprite with the destroyed version

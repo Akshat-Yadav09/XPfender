@@ -1,0 +1,115 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DesktopOverlayObjectManager : MonoBehaviour
+{
+    public List<DesktopMatchRule> rules = new List<DesktopMatchRule>();
+    private List<GameObject> activeBubbles = new List<GameObject>();
+
+    public bool enableDiagnosticMode = true;
+
+    void Start()
+    {
+        // For the first test, initialize default rules if none exist
+        if (rules.Count == 0)
+        {
+            rules.Add(new DesktopMatchRule { Type = DesktopObjectType.ThisPC });
+            rules.Add(new DesktopMatchRule { Type = DesktopObjectType.RecycleBin });
+            rules.Add(new DesktopMatchRule { Type = DesktopObjectType.FileExplorer });
+            rules.Add(new DesktopMatchRule { Type = DesktopObjectType.Shortcut }); // Any normal shortcut
+        }
+
+        RefreshDesktopObjects();
+    }
+
+    public void RefreshDesktopObjects()
+    {
+        // Clean up old
+        foreach (var b in activeBubbles)
+        {
+            if (b != null) Destroy(b);
+        }
+        activeBubbles.Clear();
+
+        int totalFound = 0;
+        int totalMatched = 0;
+        int totalSpawned = 0;
+
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+        List<DesktopObject> desktopObjects = WindowsDesktopScanner.ScanDesktop();
+        totalFound = desktopObjects.Count;
+
+        foreach (var obj in desktopObjects)
+        {
+            bool isMatched = false;
+            foreach (var rule in rules)
+            {
+                if (rule.Matches(obj))
+                {
+                    isMatched = true;
+                    totalMatched++;
+                    
+                    Vector3 unityWorldPos = DesktopCoordinateConverter.WindowsToUnityWorld(obj.screenPosition, Camera.main, 10f);
+
+                    if (enableDiagnosticMode)
+                    {
+                        Debug.Log($"DesktopObject:\nName = {obj.displayName}\nType = {obj.type}\nTarget = {obj.targetPath}\nExecutable = {obj.targetExecutable}\nPosition = {obj.screenPosition.x}, {obj.screenPosition.y}");
+                    }
+                    
+                    CreateBubbleFor(obj, rule, unityWorldPos);
+                    totalSpawned++;
+                    break; // Only apply first matching rule
+                }
+            }
+
+            if (!isMatched && enableDiagnosticMode)
+            {
+                // Optional: log unmatched objects to help debug
+                // Debug.Log($"Unmatched: {obj.displayName} ({obj.type})");
+            }
+        }
+#endif
+
+        if (enableDiagnosticMode)
+        {
+            Debug.Log($"TOTAL DESKTOP OBJECTS FOUND = {totalFound}");
+            Debug.Log($"MATCHED OBJECTS = {totalMatched}");
+            Debug.Log($"SPAWNED OVERLAY OBJECTS = {totalSpawned}");
+        }
+    }
+
+    private void CreateBubbleFor(DesktopObject obj, DesktopMatchRule rule, Vector3 unityWorldPos)
+    {
+        GameObject bubbleTemplate = null;
+
+        if (rule.bubblePrefab != null)
+        {
+            bubbleTemplate = rule.bubblePrefab;
+        }
+        else
+        {
+            // Find the existing manual bubble in the scene to use as a template reference
+            var existingScript = Object.FindAnyObjectByType<BigBubbleDestroyOnCollision>();
+            if (existingScript != null)
+            {
+                bubbleTemplate = existingScript.gameObject;
+            }
+        }
+
+        if (bubbleTemplate != null)
+        {
+            GameObject bubble = Instantiate(bubbleTemplate, unityWorldPos, Quaternion.identity);
+            bubble.name = "DesktopBubble_" + obj.displayName;
+            
+            // Ensure the local scale matches the original manually configured bubble
+            bubble.transform.localScale = bubbleTemplate.transform.localScale;
+            
+            bubble.SetActive(true);
+            activeBubbles.Add(bubble);
+        }
+        else
+        {
+            Debug.LogError("Could not find the existing png-transparent-soap-bubble in the scene to use as a template.");
+        }
+    }
+}

@@ -13,12 +13,12 @@ public class BubbleManager : MonoBehaviour
         // Ensure all bubbles are properly initialized
         if (bigBubbles == null || bigBubbles.Count == 0)
         {
-            Debug.LogError("BubbleManager: No big bubbles assigned in the list.");
+            Debug.LogWarning("BubbleManager: No big bubbles assigned in the list.");
             return;
         }
 
-        // Disable all colliders except for the first big bubble
-        for (int i = 1; i < bigBubbles.Count; i++)
+        // Allow up to 3 big bubbles to have enabled colliders at start
+        for (int i = 3; i < bigBubbles.Count; i++)
         {
             if (bigBubbles[i] != null)
             {
@@ -89,7 +89,6 @@ public class BubbleManager : MonoBehaviour
             if (currentBubbleIndex >= bigBubbles.Count)
             {
                 Debug.Log("All big bubbles have been destroyed!");
-                // Add any additional logic for when all bubbles are destroyed
             }
         }
         else
@@ -97,58 +96,4 @@ public class BubbleManager : MonoBehaviour
             Debug.Log($"Cannot destroy bubble: {bubble.name}. Destroy bubbles in order!");
         }
     }
-
-    // Call this method when any bubble is destroyed to handle 20-second disabling of colliders
-    // public void OnBubbleDestroyed(GameObject destroyedBubble)
-    // {
-    //     if (destroyedBubble == null) return;
-
-    //     bigBubbles.Remove(destroyedBubble);
-
-    //     // Temporarily disable all remaining colliders
-    //     collidersDisabled = true;
-    //     DisableAllColliders();
-
-    //     // Re-enable colliders after 20 seconds
-    //     Invoke(nameof(EnableRemainingColliders), 20f);
-
-    //     Debug.Log($"{destroyedBubble.name} destroyed. Disabling other bubble colliders for 20 seconds.");
-    // }
-
-    // Disables all remaining colliders
-    // private void DisableAllColliders()
-    // {
-    //       Debug.Log("hello dissable all the bubbles " ) ; 
-    //     foreach (GameObject bubble in bigBubbles)
-    //     {
-    //         if (bubble != null)
-    //         {
-    //             BoxCollider2D collider = bubble.GetComponent<BoxCollider2D>();
-    //             if (collider != null)
-    //             {
-    //                 collider.enabled = false;
-    //             }
-    //         }
-    //     }
-    // }
-
-    // Enables colliders of all remaining bubbles
-    // private void EnableRemainingColliders()
-    // {
-    //     Debug.Log("hello please enable the bubbles " ) ; 
-    //     foreach (GameObject bubble in bigBubbles)
-    //     {
-    //         if (bubble != null)
-    //         {
-    //             BoxCollider2D collider = bubble.GetComponent<BoxCollider2D>();
-    //             if (collider != null)
-    //             {
-    //                 collider.enabled = true;
-    //             }
-    //         }
-    //     }
-
-    //     collidersDisabled = false;
-    //     Debug.Log("Colliders of remaining bubbles re-enabled.");
-    // }
 }

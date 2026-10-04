@@ -4,13 +4,53 @@ using UnityEngine;
 public class ObjectManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] objects; // Array of objects to monitor
+    [SerializeField] private int allowedDestructionsBeforeBlock = 3; // Allow up to 3 destructions before blocking
+    private int destructionCount = 0;
     private bool isDestructionBlocked = false; // Flag to block further destruction
+
+    // Runtime registration uses the same existing destruction/collider handling.
+    public bool ManagesObject(GameObject obj)
+    {
+        return objects != null && System.Array.IndexOf(objects, obj) >= 0;
+    }
+
+    public void RegisterObject(GameObject obj)
+    {
+        if (obj == null || ManagesObject(obj)) return;
+        int count = objects != null ? objects.Length : 0;
+        System.Array.Resize(ref objects, count + 1);
+        objects[count] = obj;
+    }
+
+    public void UnregisterObject(GameObject obj)
+    {
+        if (objects == null) return;
+        int index = System.Array.IndexOf(objects, obj);
+        if (index >= 0) objects = RemoveFromArray(objects, index);
+    }
+
+    public void ResetForCheat(GameObject singleRemainingObject)
+    {
+        CancelInvoke(nameof(ReEnableColliders));
+        isDestructionBlocked = false;
+        destructionCount = 0;
+        objects = singleRemainingObject != null ? new GameObject[] { singleRemainingObject } : new GameObject[0];
+        if (singleRemainingObject != null)
+        {
+            BoxCollider2D collider = singleRemainingObject.GetComponent<BoxCollider2D>();
+            if (collider != null)
+            {
+                collider.enabled = true;
+                collider.isTrigger = true;
+            }
+        }
+    }
 
     private void Start()
     {
         if (objects == null || objects.Length == 0)
         {
-            Debug.LogError("No objects assigned to the ObjectManager!");
+            Debug.LogWarning("No objects assigned to the ObjectManager!");
         }
     }
 
@@ -22,13 +62,18 @@ public class ObjectManager : MonoBehaviour
         {
             if (objects[i] == null) // If any object is destroyed
             {
-                StartBlockingDestruction(i); // Handle the first detected destruction
+                objects = RemoveFromArray(objects, i);
+                destructionCount++;
+                if (destructionCount >= allowedDestructionsBeforeBlock)
+                {
+                    StartBlockingDestruction();
+                }
                 break; // Stop checking once a destroyed object is handled
             }
         }
     }
 
-    private void StartBlockingDestruction(int destroyedIndex)
+    private void StartBlockingDestruction()
     {
         if (isDestructionBlocked) return; // Skip if already blocked
 
@@ -51,18 +96,26 @@ public class ObjectManager : MonoBehaviour
 
         // Immediately re-enable BoxCollider2D and set it to trigger mode after the block period
         Invoke(nameof(ReEnableColliders), 10f); // Call ReEnableColliders after 10 seconds
-
-        // Remove the destroyed object from the list
-        objects = RemoveFromArray(objects, destroyedIndex);
     }
 
     private void ReEnableColliders()
     {
+        // If chips are currently active or boss fight has started, delay re-enabling until chips are cleared
+        if (Spawner.HasActiveChips() || Spawner.isBossFightStarted)
+        {
+            Invoke(nameof(ReEnableColliders), 0.5f);
+            return;
+        }
+
+        destructionCount = 0;
         // Re-enable BoxCollider2D and set it to trigger mode immediately
         foreach (var obj in objects)
         {
             if (obj != null) // Only re-enable colliders for existing objects
             {
+                var comp = obj.GetComponent<BigBubbleDestroyOnCollision>();
+                if (comp != null && comp.isPopping) continue;
+
                 BoxCollider2D collider = obj.GetComponent<BoxCollider2D>();
                 if (collider != null)
                 {

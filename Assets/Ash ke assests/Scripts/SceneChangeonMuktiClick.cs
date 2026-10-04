@@ -55,9 +55,11 @@ public class SceneChangeonMuktiClick : MonoBehaviour
             audioSource.clip = buttonClickSound; // Set the sound clip
             audioSource.Play(); // Play the sound
         }
-        else
+        else if (buttonClickSound != null)
         {
-            Debug.LogError("AudioSource or ButtonClickSound is not assigned!");
+            Vector3 pos = Camera.main != null ? Camera.main.transform.position : transform.position;
+            AudioSource.PlayClipAtPoint(buttonClickSound, pos);
         }
+        // If neither is assigned, just do nothing instead of throwing an error.
     }
 }

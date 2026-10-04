@@ -13,7 +13,22 @@ public class EnableOnTriggerDestroy : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No object assigned to enable on destruction.");
+            // Fallback for when Inspector references are lost:
+            // Find the inactive boss objects directly in the scene roots
+            bool foundFallback = false;
+            foreach (GameObject root in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                if (root.name == "NON-Boss" || root.name == "Boss")
+                {
+                    root.SetActive(true);
+                    foundFallback = true;
+                }
+            }
+            
+            if (!foundFallback)
+            {
+                Debug.LogWarning("No object assigned to enable on destruction, and fallback objects (NON-Boss/Boss) could not be found.");
+            }
         }
     }
 }

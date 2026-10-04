@@ -18,10 +18,10 @@ EditorBuildSettings:
     path: Assets/Scenes/PlaneController.unity
     guid: 539cbc135adaf6f4d86abd9c2b20c6fb
   - enabled: 1
-    path: Assets/Ash ke assests/Extra scenes/Antivirus.unity
+    path: Assets/Scenes/Antivirus.unity
     guid: 49cf4b3d0a1a7664d90707f2a76480e4
   - enabled: 1
-    path: Assets/Ash ke assests/Extra scenes/BuggedWindows.unity
+    path: Assets/Scenes/BuggedWindows.unity
     guid: 3bdbda1ee53e1db4188210e9b99154d5
   - enabled: 1
     path: Assets/Scenes/Main Fight Area.unity

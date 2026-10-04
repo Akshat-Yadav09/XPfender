@@ -8,12 +8,60 @@ public class CheckObjectsDestroyed : MonoBehaviour
     [Header("UI to Enable")]
     public GameObject ui;
 
+    private bool phaseOneCompleted = false;
+
     void Update()
     {
+        if (phaseOneCompleted) return;
+
         // Check if all logo parts are destroyed
         if (AreAllPartsDestroyed())
         {
-            EnableUI();
+            phaseOneCompleted = true;
+
+            if (BossPhaseTwoController.Instance != null)
+            {
+                string[] transitionLines = new string[]
+                {
+                    "System Report: Threat Neutralized.",
+                    "...",
+                    "Wait...",
+                    "You thought it was over?",
+                    "Your computer is <link=\"shake\"><color=red>MINE.</color></link>",
+                    "Your files will be <link=\"shake\">temporary...</link>",
+                    "But I am <link=\"shake\"><color=red>FOREVER!</color></link>"
+                };
+
+                if (BossIntroDialogue.Instance != null)
+                {
+                    BossIntroDialogue.Instance.PlayCustomDialogue(transitionLines, 
+                    () => 
+                    {
+                        BossPhaseTwoController.Instance.StartPhaseTwo();
+                    }, 
+                    (lineIndex) => 
+                    {
+                        // lineIndex 2 corresponds to "Wait..."
+                        if (lineIndex == 2)
+                        {
+                            if (BossMusicManager.Instance != null)
+                            {
+                                BossMusicManager.Instance.PlayBossMusic();
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    // Fallback if no dialogue manager is found
+                    BossPhaseTwoController.Instance.StartPhaseTwo();
+                }
+            }
+            else
+            {
+                // No Phase 2 found, just end the game
+                EnableUI();
+            }
         }
     }
 
@@ -37,7 +85,7 @@ public class CheckObjectsDestroyed : MonoBehaviour
         return true; // All parts are destroyed
     }
 
-    private void EnableUI()
+    public void EnableUI()
     {
         if (ui != null)
         {

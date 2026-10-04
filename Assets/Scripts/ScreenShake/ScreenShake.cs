@@ -2,35 +2,43 @@ using UnityEngine;
 
 public class ShakeObject : MonoBehaviour
 {
-    public float shakeAmount = 0.1f;  // How much the object shakes
-    public float shakeDuration = 1f;  // How long the shake lasts
+    [Header("Shake Settings")]
+    public float shakeAmount = 15f;  // Larger amount for UI/Screen shake
+    public float shakeDuration = 0.5f; // Faster duration for error bump
+    public float shakeSpeed = 50f;   // Speed of the shake
+
+    [Header("Audio")]
+    public AudioClip errorSound;
+
     private Vector3 originalPosition;
     private float shakeTimer;
+    private AudioSource audioSource;
 
     void Start()
     {
-        originalPosition = transform.position;
+        originalPosition = transform.localPosition; // localPosition is better for UI
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
     }
 
     void Update()
     {
         if (shakeTimer > 0)
         {
-            // Shake effect
-            Vector3 randomShake = originalPosition + new Vector3(
-                Random.Range(-shakeAmount, shakeAmount), 
-                Random.Range(-shakeAmount, shakeAmount), 
-                Random.Range(-shakeAmount, shakeAmount)  // Optional to shake on Z-axis
-            );
-            transform.position = randomShake;
+            // Improved head-shake (left/right) effect using sine wave, dampening over time
+            float dampen = shakeTimer / shakeDuration;
+            float offsetX = Mathf.Sin(Time.time * shakeSpeed) * shakeAmount * dampen;
+            
+            transform.localPosition = originalPosition + new Vector3(offsetX, 0, 0);
 
             // Decrease shake timer
             shakeTimer -= Time.deltaTime;
         }
-        else
+        else if (transform.localPosition != originalPosition)
         {
             // Reset to original position once shaking is done
-            transform.position = originalPosition;
+            transform.localPosition = originalPosition;
         }
     }
 
@@ -38,5 +46,10 @@ public class ShakeObject : MonoBehaviour
     public void StartShake()
     {
         shakeTimer = shakeDuration;
+        
+        if (errorSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(errorSound);
+        }
     }
 }
