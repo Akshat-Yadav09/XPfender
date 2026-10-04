@@ -31,26 +31,92 @@ public class BoxColliderClickHandler : MonoBehaviour
 
     private static List<DesktopObject> cachedDesktopObjects = null;
     private static int nextDesktopObjectIndex = 0;
+    private static string lastSceneName = "";
+    private static int totalMappedIcons = 0;
+
+    private static int GetPriority(DesktopObject obj)
+    {
+        switch (obj.type)
+        {
+            case DesktopObjectType.ThisPC:
+            case DesktopObjectType.RecycleBin:
+            case DesktopObjectType.FileExplorer:
+                return 1;
+            case DesktopObjectType.Folder:
+                return 2;
+            case DesktopObjectType.Browser:
+                return 3;
+            case DesktopObjectType.Shortcut:
+                return 4;
+            case DesktopObjectType.File:
+            default:
+                return 5;
+        }
+    }
 
     private void Start()
     {
-        // Only run desktop mapping if we're on a supported platform
 #if UNITY_STANDALONE_WIN
-        if (cachedDesktopObjects == null)
+        string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        
+        Camera cam = Camera.main;
+        if (cam == null) cam = FindAnyObjectByType<Camera>();
+
+        // Reset cache if we loaded a new scene
+        if (cachedDesktopObjects == null || lastSceneName != currentScene)
         {
             cachedDesktopObjects = WindowsDesktopScanner.ScanDesktop();
+            
+            // Clean up list by filtering out garbage
+            if (cachedDesktopObjects != null)
+            {
+                cachedDesktopObjects.RemoveAll(o => string.IsNullOrEmpty(o.displayName));
+                
+                // Sort the list so This PC, Recycle Bin, and Folders are at the very beginning!
+                cachedDesktopObjects.Sort((a, b) => GetPriority(a).CompareTo(GetPriority(b)));
+            }
+
             nextDesktopObjectIndex = 0;
+            totalMappedIcons = 0;
+            lastSceneName = currentScene;
         }
 
-        if (cachedDesktopObjects != null && nextDesktopObjectIndex < cachedDesktopObjects.Count)
+        // Enforce maximum of 5 icons
+        if (totalMappedIcons >= 5)
         {
-            DesktopObject obj = cachedDesktopObjects[nextDesktopObjectIndex++];
-            
-            // Assume Camera.main exists and z depth is current object's z
-            if (DesktopCoordinateConverter.TryWindowsToUnityWorld(obj.screenPosition, Camera.main, transform.position.z, out Vector3 unityWorldPos))
+            if (!Application.isEditor) gameObject.SetActive(false);
+            return;
+        }
+
+        if (cachedDesktopObjects != null)
+        {
+            bool successfullyMapped = false;
+
+            // Keep iterating through desktop objects until we find one that successfully maps to the screen
+            while (nextDesktopObjectIndex < cachedDesktopObjects.Count && !successfullyMapped)
             {
-                transform.position = unityWorldPos;
-                Debug.Log($"Mapped {gameObject.name} to Desktop Icon {obj.displayName} at {unityWorldPos}");
+                DesktopObject obj = cachedDesktopObjects[nextDesktopObjectIndex++];
+                
+                if (cam != null)
+                {
+                    // Use z = 0f as a safe default for 2D objects if the transform's Z is weird
+                    float zDepth = transform.position.z != cam.transform.position.z ? transform.position.z : 0f;
+
+                    if (DesktopCoordinateConverter.TryWindowsToUnityWorld(obj.screenPosition, cam, zDepth, out Vector3 unityWorldPos))
+                    {
+                        transform.position = unityWorldPos;
+                        successfullyMapped = true;
+                        totalMappedIcons++;
+                        
+                        Debug.Log($"[BoxColliderClickHandler] Mapped {gameObject.name} to Desktop Icon '{obj.displayName}' at {unityWorldPos}");
+                    }
+                }
+            }
+
+            // If we checked all icons and couldn't map this one, hide it
+            if (!successfullyMapped && !Application.isEditor)
+            {
+                gameObject.SetActive(false);
             }
         }
 #endif

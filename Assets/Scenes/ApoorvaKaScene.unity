@@ -1538,6 +1538,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shakeAmount: 10
   shakeDuration: 2
+  shakeSpeed: 50
+  errorSound: {fileID: 8300000, guid: 6c9b36d8bbbcb724aa3e6ca7dec21c6d, type: 3}
 --- !u!1 &1881244737
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,7 +18,7 @@ public class DesktopOverlayObjectManager : MonoBehaviour
     public int clutterThreshold = 20;
 
     [Tooltip("Maximum number of bubbles to spawn on screen at any time.")]
-    public int maxBubblesToSpawn = 25;
+    public int maxBubblesToSpawn = 5;
 
     [Tooltip("Minimum distance in Unity world units between spawned bubbles to prevent overlapping.")]
     public float minBubbleDistance = 0.8f;
@@ -26,6 +26,12 @@ public class DesktopOverlayObjectManager : MonoBehaviour
     public int TotalFound { get; private set; }
     public int TotalMatched { get; private set; }
     public int TotalSpawned { get; private set; }
+
+    private void Awake()
+    {
+        // Enforce maximum of 5 bubbles as requested, overriding any old Inspector values
+        maxBubblesToSpawn = 5;
+    }
     private UnityEngine.SceneManagement.Scene scannedScene;
     private bool hasScannedScene;
     private BubbleManager registeredManager;
