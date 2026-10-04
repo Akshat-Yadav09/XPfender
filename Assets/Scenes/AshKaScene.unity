@@ -820,7 +820,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TeleCanvas: {fileID: 1432420412}
   WindowsCanvas: {fileID: 933435267}
-  Tele: {fileID: 0}
   canvasSwitchDelay: 2
   audioSource: {fileID: 1206624195}
   buttonClickSound: {fileID: 8300000, guid: 5318b6ecc751a254fb1d5368467d553b, type: 3}
@@ -1012,7 +1011,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1432420413
 MonoBehaviour:
   m_ObjectHideFlags: 0

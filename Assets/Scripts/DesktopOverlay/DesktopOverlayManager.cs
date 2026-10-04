@@ -10,7 +10,7 @@ public class DesktopOverlayManager : MonoBehaviour
     private bool isTransparentModeActive = false;
 
     // Scenes that should have a transparent background
-    private string[] targetSceneNames = { "Antivirus", "BuggedWindows", "Main Fight Area", "Last Scene Wining" };
+    private string[] targetSceneNames = { "Antivirus", "BuggedWindows", "Main Fight Area", "Last Scene Wining", "AshKaScene" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Initialize()

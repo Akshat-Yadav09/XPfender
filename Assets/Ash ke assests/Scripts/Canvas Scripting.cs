@@ -6,7 +6,6 @@ public class CanvasScripting : MonoBehaviour
     [SerializeField] private GameObject TeleCanvas;
     [SerializeField] private GameObject WindowsCanvas;
 
-    [SerializeField] private GameObject Tele;
     [SerializeField] private float canvasSwitchDelay = 2f; // Duration of the delay for canvas switch
 
     [SerializeField] private AudioSource audioSource; // Reference to the AudioSource component
@@ -36,27 +35,27 @@ public class CanvasScripting : MonoBehaviour
 
     private IEnumerator SwitchCanvasWithDelay()
     {
-        WindowsCanvas.SetActive(false); // Hide Windows Canvas
-
-        Tele.SetActive(true); // Show Tele GameObject
+        if (WindowsCanvas != null)
+        {
+            WindowsCanvas.SetActive(false); // Hide Windows Canvas
+        }
 
         yield return new WaitForSeconds(canvasSwitchDelay); // Wait for the specified delay
 
-        Tele.SetActive(false); // Hide Tele GameObject
-
-        TeleCanvas.SetActive(true); // Show TeleCanvas
+        if (TeleCanvas != null)
+        {
+            TeleCanvas.SetActive(true); // Show TeleCanvas
+        }
     }
 
     private void PlayButtonClickSound()
     {
-        if (audioSource != null && buttonClickSound != null)
+        if (buttonClickSound != null)
         {
-            audioSource.clip = buttonClickSound; // Assign the sound clip
-            audioSource.Play(); // Play the sound after the delay
-        }
-        else
-        {
-            Debug.LogError("AudioSource or ButtonClickSound is not assigned!");
+            // Always fall back to PlayClipAtPoint so that the sound isn't cut off 
+            // if the WindowsCanvas (or this GameObject) is instantly set to inactive!
+            Vector3 pos = Camera.main != null ? Camera.main.transform.position : transform.position;
+            AudioSource.PlayClipAtPoint(buttonClickSound, pos, 1.0f);
         }
     }
 }
