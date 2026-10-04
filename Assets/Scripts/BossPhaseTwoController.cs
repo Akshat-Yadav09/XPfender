@@ -11,6 +11,7 @@ public class BossPhaseTwoController : MonoBehaviour
     [Header("Phase Setup")]
     [Tooltip("How many crosses the player needs to collect to defeat Phase 2.")]
     public int crossesToDefeat = 3;
+    public AudioClip victorySound;
     private int currentCrossesCollected = 0;
     private Collider2D bossCollider;
     private bool isPhaseActive = false;
@@ -354,6 +355,11 @@ public class BossPhaseTwoController : MonoBehaviour
         foreach (Transform child in transform)
         {
             child.gameObject.SetActive(false);
+        }
+
+        if (BossMusicManager.Instance != null)
+        {
+            BossMusicManager.Instance.StopMusic(victorySound);
         }
 
         // Just yield one frame to be safe

@@ -29,6 +29,10 @@ public class BoxColliderClickHandler : MonoBehaviour
 
     [SerializeField] private float delay = 0.5f;
 
+    [Header("Desktop Mapping")]
+    [Tooltip("Adjust this if the bubbles are slightly offset from the real desktop icons.")]
+    public Vector2 desktopMappingOffset = Vector2.zero;
+
     private static List<DesktopObject> cachedDesktopObjects = null;
     private static int nextDesktopObjectIndex = 0;
     private static string lastSceneName = "";
@@ -104,11 +108,12 @@ public class BoxColliderClickHandler : MonoBehaviour
 
                     if (DesktopCoordinateConverter.TryWindowsToUnityWorld(obj.screenPosition, cam, zDepth, out Vector3 unityWorldPos))
                     {
-                        transform.position = unityWorldPos;
+                        // Apply the manual offset to fix any pivot issues
+                        transform.position = unityWorldPos + (Vector3)desktopMappingOffset;
                         successfullyMapped = true;
                         totalMappedIcons++;
                         
-                        Debug.Log($"[BoxColliderClickHandler] Mapped {gameObject.name} to Desktop Icon '{obj.displayName}' at {unityWorldPos}");
+                        Debug.Log($"[BoxColliderClickHandler] Mapped {gameObject.name} to Desktop Icon '{obj.displayName}' at {transform.position}");
                     }
                 }
             }

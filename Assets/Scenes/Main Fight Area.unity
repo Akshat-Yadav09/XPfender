@@ -2269,6 +2269,7 @@ MonoBehaviour:
   destroyedSprite: {fileID: 21300000, guid: 08a7be45a1b37504aa82df260131d289, type: 3}
   destroySound: {fileID: 8300000, guid: 9c1cebdbe6fce8a4aad1bfcc8a43bf7a, type: 3}
   bottomOffset: 1
+  gameOverSound: {fileID: 8300000, guid: 19a92bc27f7f60e4db90b0342e20212c, type: 3}
   spriteRenderer: {fileID: 638124032}
 --- !u!1 &371116602
 GameObject:
@@ -2769,6 +2770,7 @@ MonoBehaviour:
   destroyedSprite: {fileID: 21300000, guid: 08a7be45a1b37504aa82df260131d289, type: 3}
   destroySound: {fileID: 8300000, guid: 9c1cebdbe6fce8a4aad1bfcc8a43bf7a, type: 3}
   bottomOffset: 1
+  gameOverSound: {fileID: 8300000, guid: 19a92bc27f7f60e4db90b0342e20212c, type: 3}
   spriteRenderer: {fileID: 912722775}
 --- !u!1 &563818349
 GameObject:
@@ -5493,6 +5495,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossPhaseTwoController
   crossesToDefeat: 4
+  victorySound: {fileID: 8300000, guid: affcc4d62f9dd43428c211b860eae75c, type: 3}
   hoverSpeed: 2
   hoverAmplitude: 1.5
   roamSpeed: 1
@@ -5874,6 +5877,7 @@ MonoBehaviour:
   destroyedSprite: {fileID: 21300000, guid: 08a7be45a1b37504aa82df260131d289, type: 3}
   destroySound: {fileID: 8300000, guid: 9c1cebdbe6fce8a4aad1bfcc8a43bf7a, type: 3}
   bottomOffset: 1
+  gameOverSound: {fileID: 8300000, guid: 19a92bc27f7f60e4db90b0342e20212c, type: 3}
   spriteRenderer: {fileID: 465974043}
 --- !u!1 &1495789473
 GameObject:
@@ -5996,7 +6000,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea283076fd79fb4cbb3f1be4a6ffa11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 0}
+  mainCamera: {fileID: 2096603781}
   objectToTeleport: {fileID: 1511860838}
   xOffset: -3.5
   yOffset: -0.5
@@ -6234,10 +6238,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 564879976173502419, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
     - target: {fileID: 2465152705110331595, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
       propertyPath: m_GlobalFontAsset
       value: 
       objectReference: {fileID: 11400000, guid: d284237563c0b554f892a7a823805437, type: 2}
+    - target: {fileID: 2591248645236106724, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3068277042288893653, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.0563138
@@ -6282,6 +6294,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameOver
       objectReference: {fileID: 0}
+    - target: {fileID: 4209393068010745473, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 5348959021601508315, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6309023566440031920, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 31.647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6309023566440031920, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -258.83255
+      objectReference: {fileID: 0}
     - target: {fileID: 6445597241225310480, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
       propertyPath: m_UiScaleMode
       value: 1
@@ -6294,13 +6322,33 @@ PrefabInstance:
       propertyPath: m_ReferenceResolution.y
       value: 1080
       objectReference: {fileID: 0}
+    - target: {fileID: 7139680423673436551, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: m_VertexColorAlwaysGammaSpace
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7639177832475401265, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 8482730182988830684, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.4999981
+      objectReference: {fileID: 0}
     - target: {fileID: 8505626921139990827, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
       propertyPath: m_fontAsset
       value: 
       objectReference: {fileID: 11400000, guid: d284237563c0b554f892a7a823805437, type: 2}
     - target: {fileID: 8505626921139990827, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -5033436213775035112, guid: d284237563c0b554f892a7a823805437, type: 2}
+    - target: {fileID: 8505626921139990827, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
       propertyPath: m_hasFontAssetChanged
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8505626921139990827, guid: 4ce773642f55dc74a97c2407b3c832fe, type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

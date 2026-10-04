@@ -5,6 +5,8 @@ public class PlaneManager : MonoBehaviour
     public static PlaneManager Instance; // Singleton instance
     private PlaneController2D[] allPlanes;
     private int currentPlaneIndex = 0;
+    
+    public int TotalPlanes => allPlanes != null ? allPlanes.Length : 0;
 
     private void Awake()
     {

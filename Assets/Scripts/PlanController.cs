@@ -10,6 +10,9 @@ public class PlaneController2D : MonoBehaviour
     public Sprite destroyedSprite;         // Sprite to display when the plane is destroyed
     public AudioClip destroySound;         // Sound effect to play when the plane is destroyed
     public float bottomOffset = 0.5f;      // Offset from the bottom of the screen in world units
+    
+    [Header("Game Over Settings")]
+    public AudioClip gameOverSound;        // Sound effect to play for game over music/jingle
 
     private Rigidbody2D rb;
     public SpriteRenderer spriteRenderer;
@@ -155,6 +158,16 @@ public class PlaneController2D : MonoBehaviour
         rb.gravityScale = 2f;
 
         Destroy(gameObject, 3f);
+
+        // Check if this was the last plane
+        if (PlaneManager.Instance != null && planeIndex >= PlaneManager.Instance.TotalPlanes - 1)
+        {
+            // Stop boss music and play Game Over SFX
+            if (BossMusicManager.Instance != null)
+            {
+                BossMusicManager.Instance.StopMusic(gameOverSound);
+            }
+        }
 
         // Notify PlaneManager to activate the next plane
         PlaneManager.Instance.ActivateNextPlane();

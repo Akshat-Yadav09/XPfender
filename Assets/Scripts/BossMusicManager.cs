@@ -110,4 +110,23 @@ public class BossMusicManager : MonoBehaviour
 
         bgmAudioSource.volume = startVolume;
     }
+
+    /// <summary>
+    /// Instantly stops the music and optionally plays a sound effect.
+    /// </summary>
+    public void StopMusic(AudioClip endSfx = null)
+    {
+        StopAllCoroutines();
+        
+        if (bgmAudioSource != null)
+        {
+            bgmAudioSource.Stop();
+        }
+
+        if (endSfx != null)
+        {
+            // Play it on a temporary AudioSource or PlayClipAtPoint so it isn't affected by the music AudioSource's settings
+            AudioSource.PlayClipAtPoint(endSfx, Camera.main != null ? Camera.main.transform.position : Vector3.zero, 1.0f);
+        }
+    }
 }
